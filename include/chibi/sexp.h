@@ -542,9 +542,15 @@ void* sexp_alloc(sexp ctx, size_t size);
 #define sexp_gc_release6(ctx) sexp_gc_release(ctx, NULL, __sexp_gc_preserver1)
 #define sexp_gc_release7(ctx) sexp_gc_release(ctx, NULL, __sexp_gc_preserver1)
 
-#define sexp_align(n, bits) (((n)+(1<<(bits))-1)&(((sexp_uint_t)-1)-((1<<(bits))-1)))
+  /* align forward to 2**bits boundary
+     so that n <= sexp_align(n, bits) will hold */
+#define sexp_align(n, bits) \
+  (((n) + (1 << (bits)) - 1) & (((sexp_uint_t)-1) - ((1 << (bits)) - 1)))
 
 #if SEXP_64_BIT
+# ifdef __arm__
+# error "no support for x64 arm yet, remove this at your own risk"
+# endif
 #define sexp_word_align(n) sexp_align((n), 3)
 #else
 #define sexp_word_align(n) sexp_align((n), 2)
@@ -1529,7 +1535,7 @@ SEXP_API sexp sexp_finalize_c_type (sexp ctx, sexp self, sexp_sint_t n, sexp obj
 #define sexp_get_output_string(ctx, out) sexp_get_output_string_op(ctx, NULL, 1, out)
 #define sexp_expt(ctx, a, b) sexp_expt_op(ctx, NULL, 2, a, b)
 #define sexp_register_simple_type(ctx, a, b, c) sexp_register_simple_type_op(ctx, NULL, 3, a, b, c)
-#define sexp_register_type(ctx, a, b, c, d, e, f, g, h, i, j, k, l, m, o, p, q, r, s) sexp_register_type_op(ctx, NULL, 18, a, b, c, d, e, f, g, h, i, j, k, l, m, o, p, q, r, s)
+#define sexp_register_type(ctx, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r) sexp_register_type_op(ctx, NULL, 18, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r)
 #define sexp_make_type_predicate(ctx, a, b) sexp_make_type_predicate_op(ctx, NULL, 2, a, b)
 #define sexp_make_constructor(ctx, a, b) sexp_make_constructor_op(ctx, NULL, 2, a, b)
 #define sexp_make_getter(ctx, a, b, c) sexp_make_getter_op(ctx, NULL, 3, a, b, c)

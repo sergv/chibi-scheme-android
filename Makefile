@@ -25,9 +25,11 @@ CHIBI_OPT_COMPILED_LIBS = lib/chibi/optimize/rest$(SO) \
 	lib/chibi/optimize/profile$(SO)
 COMPILED_LIBS = $(CHIBI_COMPILED_LIBS) $(CHIBI_IO_COMPILED_LIBS) \
 	$(CHIBI_OPT_COMPILED_LIBS) lib/srfi/18/threads$(SO) \
-	lib/srfi/27/rand$(SO) lib/srfi/33/bit$(SO) lib/srfi/39/param$(SO) \
+	lib/srfi/33/bit$(SO) lib/srfi/39/param$(SO) \
 	lib/srfi/69/hash$(SO) lib/srfi/95/qsort$(SO) lib/srfi/98/env$(SO) \
 	lib/scheme/time$(SO)
+# disable for now
+# lib/srfi/27/rand$(SO)
 
 BASE_INCLUDES = include/chibi/sexp.h include/chibi/features.h include/chibi/install.h include/chibi/bignum.h
 INCLUDES = $(BASE_INCLUDES) include/chibi/eval.h
@@ -52,18 +54,20 @@ include Makefile.libs
 
 ifeq ($(SEXP_USE_BOEHM),1)
 GCLDFLAGS := -lgc
-XCPPFLAGS := $(CPPFLAGS) -Iinclude $(D:%=-DSEXP_USE_%) -DSEXP_USE_BOEHM=1
+XCPPFLAGS := $(CPPFLAGS) -I. -Iinclude $(D:%=-DSEXP_USE_%) -DSEXP_USE_BOEHM=1
 else
 GCLDFLAGS :=
-XCPPFLAGS := $(CPPFLAGS) -Iinclude $(D:%=-DSEXP_USE_%)
+XCPPFLAGS := $(CPPFLAGS) -I. -Iinclude $(D:%=-DSEXP_USE_%)
 endif
 
 ifeq ($(SEXP_USE_DL),0)
 XLDFLAGS  := $(LDFLAGS) $(RLDFLAGS) $(GCLDFLAGS) -lm
-XCFLAGS   := -Wall -DSEXP_USE_DL=0 -g -g3 -Os $(CFLAGS)
+XCFLAGS   := -Wall -Wextra -DSEXP_USE_DL=0 $(CFLAGS)
+# -Os
 else
 XLDFLAGS  := $(LDFLAGS) $(RLDFLAGS) $(GCLDFLAGS) $(LIBDL) -lm
-XCFLAGS   := -Wall -g -g3 -Os $(CFLAGS)
+XCFLAGS   := -Wall -Wextra $(CFLAGS)
+# -Os
 endif
 
 ########################################################################
@@ -93,6 +97,9 @@ SEXP_OBJS = gc.o sexp.o bignum.o
 SEXP_ULIMIT_OBJS = gc-ulimit.o sexp-ulimit.o bignum.o
 EVAL_OBJS = opcodes.o vm.o eval.o simplify.o
 
+EXEC_OBJS = main.o $(SEXP_OBJS) $(EVAL_OBJS)
+EXEC_SRC = $(patsubst %.o,%.c,$(EXEC_OBJS))
+
 libchibi-sexp$(SO): $(SEXP_OBJS)
 	$(CC) $(CLIBFLAGS) -o $@ $^ $(XLDFLAGS)
 
@@ -105,6 +112,9 @@ chibi-scheme$(EXE): main.o libchibi-scheme$(SO)
 chibi-scheme-static$(EXE): main.o $(SEXP_OBJS) $(EVAL_OBJS)
 	$(CC) $(XCFLAGS) $(STATICFLAGS) -o $@ $^ $(LDFLAGS) $(GCLDFLAGS) -lm
 
+chibi-scheme-static-host$(EXE): $(EXEC_SRC)
+	$(CC) $(XCPPFLAGS) $(XCFLAGS) $(STATICFLAGS) -o $@ $^ $(LDFLAGS) $(GCLDFLAGS) -lm
+
 chibi-scheme-ulimit$(EXE): main.o $(SEXP_ULIMIT_OBJS) $(EVAL_OBJS)
 	$(CC) $(XCFLAGS) $(STATICFLAGS) -o $@ $^ $(LDFLAGS) $(GCLDFLAGS) -lm
 
@@ -113,7 +123,7 @@ clibs.c: $(GENSTATIC) chibi-scheme$(EXE)
 
 # A special case, this needs to be linked with the LDFLAGS in case
 # we're using Boehm.
-lib/chibi/ast$(SO): lib/chibi/ast.c $(INCLUDES)
+lib/chibi/ast$(SO): lib/chibi/ast.c $(INCLUDES) libchibi-scheme$(SO)
 	-$(CC) $(CLIBFLAGS) $(XCPPFLAGS) $(XCFLAGS) -o $@ $< $(GCLDFLAGS) -L. -lchibi-scheme
 
 doc/lib/chibi/%.html: lib/chibi/%.sld $(CHIBI_DOC_DEPENDENCIES)
@@ -240,7 +250,8 @@ clean: clean-libs
 	-$(RM) *.o *.i *.s *.8 tests/basic/*.out tests/basic/*.err
 
 cleaner: clean
-	-$(RM) chibi-scheme$(EXE) chibi-scheme-static$(EXE) chibi-scheme-ulimit$(EXE) \
+	-$(RM) chibi-scheme$(EXE) chibi-scheme-static$(EXE) \
+	    chibi-scheme-static-host$(EXE) chibi-scheme-ulimit$(EXE) \
 	    libchibi-scheme$(SO) *.a include/chibi/install.h \
 	    $(shell $(FIND) lib -name \*.o)
 
@@ -287,7 +298,7 @@ install: all
 	$(INSTALL) $(CHIBI_OPT_COMPILED_LIBS) $(DESTDIR)$(BINMODDIR)/chibi/optimize/
 	$(INSTALL) lib/scheme/time$(SO) $(DESTDIR)$(BINMODDIR)/scheme/
 	$(INSTALL) lib/srfi/18/threads$(SO) $(DESTDIR)$(BINMODDIR)/srfi/18
-	$(INSTALL) lib/srfi/27/rand$(SO) $(DESTDIR)$(BINMODDIR)/srfi/27
+# $(INSTALL) lib/srfi/27/rand$(SO) $(DESTDIR)$(BINMODDIR)/srfi/27
 	$(INSTALL) lib/srfi/33/bit$(SO) $(DESTDIR)$(BINMODDIR)/srfi/33
 	$(INSTALL) lib/srfi/39/param$(SO) $(DESTDIR)$(BINMODDIR)/srfi/39
 	$(INSTALL) lib/srfi/69/hash$(SO) $(DESTDIR)$(BINMODDIR)/srfi/69
@@ -303,7 +314,7 @@ install: all
 	$(INSTALL) doc/chibi-scheme.1 $(DESTDIR)$(MANDIR)/
 	$(INSTALL) doc/chibi-ffi.1 $(DESTDIR)$(MANDIR)/
 	$(INSTALL) doc/chibi-doc.1 $(DESTDIR)$(MANDIR)/
-	-if type ldconfig >/dev/null 2>/dev/null; then ldconfig; fi
+	# -if type ldconfig >/dev/null 2>/dev/null; then ldconfig; fi
 
 uninstall:
 	-$(RM) $(DESTDIR)$(BINDIR)/chibi-scheme$(EXE)

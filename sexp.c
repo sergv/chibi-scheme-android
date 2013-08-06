@@ -2140,7 +2140,7 @@ sexp sexp_read_string (sexp ctx, sexp in, int sentinel) {
       case 'a': c = '\a'; break;
       case 'b': c = '\b'; break;
       case 'n': c = '\n'; break;
-      case 'r': c = '\r'; break; 
+      case 'r': c = '\r'; break;
       case 't': c = '\t'; break;
       case 'x':
         res = sexp_read_number(ctx, in, 16);

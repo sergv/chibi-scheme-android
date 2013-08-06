@@ -2035,7 +2035,7 @@ sexp sexp_thread_parameters_set (sexp ctx, sexp self, sexp_sint_t n, sexp new) {
 }
 
 void sexp_set_parameter (sexp ctx, sexp env, sexp name, sexp value) {
-  sexp param = sexp_env_ref(env, name, SEXP_FALSE);
+  sexp param = sexp_env_ref(env ? env : sexp_context_env(ctx), name, SEXP_FALSE);
   if (sexp_opcodep(param)) {
     if (! sexp_pairp(sexp_opcode_data(param)))
       sexp_opcode_data(param) = sexp_cons(ctx, name, value);
@@ -2108,6 +2108,9 @@ static const char* sexp_initial_features[] = {
 #endif
 #if SEXP_USE_RATIOS
   "ratios",
+#endif
+#ifdef ANDROID
+  "android",
 #endif
   "r7rs",
   "chibi",

@@ -32,7 +32,9 @@ MANDIR    ?= $(PREFIX)/share/man/man1
 
 DESTDIR   ?=
 
+ifndef CHIBI
 CHIBI     ?= chibi-scheme$(EXE)
+endif
 CHIBI_FFI ?= chibi-ffi
 CHIBI_DOC ?= chibi-doc
 
@@ -49,7 +51,7 @@ all-libs: $(COMPILED_LIBS)
 lib/%.c: lib/%.stub $(CHIBI_FFI_DEPENDENCIES)
 	$(CHIBI_FFI) $<
 
-lib/%$(SO): lib/%.c $(INCLUDES)
+lib/%$(SO): lib/%.c $(INCLUDES) libchibi-scheme$(SO)
 	$(CC) $(CLIBFLAGS) $(XCPPFLAGS) $(XCFLAGS) -o $@ $< -L. $(XLIBS) -lchibi-scheme
 
 doc-libs: $(HTML_LIBS)

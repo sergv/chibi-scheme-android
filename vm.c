@@ -1755,7 +1755,7 @@ sexp sexp_apply (sexp ctx, sexp proc, sexp args) {
     } else if (sexp_flonump(tmp1) && sexp_flonump(tmp2)) {
       i = sexp_flonum_value(tmp1) < sexp_flonum_value(tmp2);
     } else if (sexp_flonump(tmp1) && sexp_fixnump(tmp2)) {
-      i = sexp_flonum_value(tmp1) < (double)sexp_unbox_fixnum(tmp2); 
+      i = sexp_flonum_value(tmp1) < (double)sexp_unbox_fixnum(tmp2);
     } else if (sexp_fixnump(tmp1) && sexp_flonump(tmp2)) {
       i = (double)sexp_unbox_fixnum(tmp1) < sexp_flonum_value(tmp2);
 #endif

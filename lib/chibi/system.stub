@@ -15,7 +15,7 @@
   (string  pw_passwd   user-password)
   (uid_t   pw_uid      user-id)
   (gid_t   pw_gid      user-group-id)
-  (string  pw_gecos    user-gecos)
+  ;; (string  pw_gecos    user-gecos)
   (string  pw_dir      user-home)
   (string  pw_shell    user-shell))
 
@@ -39,7 +39,8 @@
 ;;> Returns the session id of the specified process,
 ;;> defaulting to the current process.
 
-(define-c pid_t (current-session-id "getsid") ((default 0 pid_t)))
+;; missing from BIONIC
+;; (define-c pid_t (current-session-id "getsid") ((default 0 pid_t)))
 
 ;;> Creates a new session.
 
@@ -51,14 +52,15 @@
 
 (define-c errno (set-root-directory! "chroot") (string))
 
-(define-c errno getpwuid_r
-  (uid_t (result passwd)
-         (link string)
-         (value (string-size arg2) int)
-         (result pointer passwd)))
-
-(define-c errno getpwnam_r
-  (string (result passwd)
-          (link string)
-          (value (string-size arg2) int)
-          (result pointer passwd)))
+;; missing frow BIONIC, see pwd.h
+;; (define-c errno getpwuid_r
+;;   (uid_t (result passwd)
+;;          (link string)
+;;          (value (string-size arg2) int)
+;;          (result pointer passwd)))
+;;
+;; (define-c errno getpwnam_r
+;;   (string (result passwd)
+;;           (link string)
+;;           (value (string-size arg2) int)
+;;           (result pointer passwd)))

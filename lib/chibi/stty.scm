@@ -36,13 +36,13 @@
    ;; special settings
    (cols     special  #f) ; tell the kernel that the terminal has N columns
    (columns  special  #f) ; same as cols N
-   (ispeed   special  #f) ; set the input speed to N
+   ;; (ispeed   special  #f) ; set the input speed to N
    (line     special  #f) ; use line discipline N
    (min      special  #f) ; with -icanon, set N characters minimum for a completed read
-   (ospeed   special  #f) ; set the output speed to N
+   ;; (ospeed   special  #f) ; set the output speed to N
    (rows     special  #f) ; tell the kernel that the terminal has N rows
    (size     special  #f) ; print the number of rows and columns according to the kernel
-   (speed    special  #f) ; print the terminal speed
+   ;; (speed    special  #f) ; print the terminal speed
    (time     special  #f) ; with -icanon, set read timeout of N tenths of a second
 
    ;; control settings

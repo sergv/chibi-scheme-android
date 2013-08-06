@@ -82,13 +82,13 @@
 /* #define SEXP_USE_CONSERVATIVE_GC 1 */
 
 /* uncomment this to add additional native checks to only mark objects in the heap */
-/* #define SEXP_USE_SAFE_GC_MARK 1 */
+#define SEXP_USE_SAFE_GC_MARK 1
 
 /* uncomment this to track what C source line each object is allocated from */
 /* #define SEXP_USE_TRACK_ALLOC_SOURCE 1 */
 
 /* uncomment this to add additional native gc checks to verify a magic header */
-/* #define SEXP_USE_HEADER_MAGIC 1 */
+#define SEXP_USE_HEADER_MAGIC 1
 
 /* uncomment this to add very verbose debugging stats to the native GC */
 /* #define SEXP_USE_DEBUG_GC 1 */
@@ -201,7 +201,7 @@
 /*   By default chibi uses an datetime epoch starting at */
 /*   2010/01/01 00:00:00 in order to be able to represent */
 /*   more common times as fixnums. */
-/* #define SEXP_USE_2010_EPOCH 0 */
+#define SEXP_USE_2010_EPOCH 0
 
 /* uncomment this to disable stack overflow checks */
 /*   By default stacks are fairly small, so it's good to leave */
@@ -214,13 +214,16 @@
 /*   will just raise an error immediately. */
 /* #define SEXP_USE_GROW_STACK 0 */
 
-/* #define SEXP_USE_DEBUG_VM 0 */
+/* #define SEXP_USE_DEBUG_VM 1 */
 /*   Experts only. */
 /*   For *very* verbose output on every VM operation. */
 
 /* uncomment this to make the VM adhere to alignment rules */
 /*   This is required on some platforms, e.g. ARM */
-/* #define SEXP_USE_ALIGNED_BYTECODE */
+#ifdef ANDROID
+/* disable on android since it breaks everything there */
+#define SEXP_USE_ALIGNED_BYTECODE 0
+#endif
 
 /************************************************************************/
 /* These settings are configurable but only recommended for */
