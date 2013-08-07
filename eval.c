@@ -2,11 +2,13 @@
 /*  Copyright (c) 2009-2013 Alex Shinn.  All rights reserved. */
 /*  BSD-style license: http://synthcode.com/license.txt       */
 
-#include "chibi/eval.h"
+#include <chibi/eval.h>
 
-#if SEXP_USE_DEBUG_VM || SEXP_USE_PROFILE_VM || SEXP_USE_STATIC_LIBS
-#include "opt/opcode_names.h"
+#if SEXP_USE_DEBUG_VM || SEXP_USE_PROFILE_VM || SEXP_USE_STATIC_LIBS || !defined(NDEBUG)
+#include <opt/opcode_names.h>
 #endif
+
+#include <assert.h>
 
 /************************************************************************/
 
@@ -1236,8 +1238,18 @@ static sexp sexp_load_dl (sexp ctx, sexp file, sexp env) {
   sexp_init_proc init;
   sexp_gc_var2(res, old_dl);
   void *handle = dlopen(sexp_string_data(file), RTLD_LAZY);
-  if (! handle)
-    return sexp_compile_error(ctx, "couldn't load dynamic library", file);
+  if (! handle) {
+#ifdef SEXP_USE_VERBOSE_MESSAGES
+    char buf[512] = { 0 };
+    snprintf(buf, sizeof(buf), "couldn't load dynamic library %s\ndlerror: %s\nLD_LIBRARY_PATH: %s",
+             sexp_string_data(file),
+             dlerror(),
+             getenv("LD_LIBRARY_PATH"));
+    return sexp_user_exception(ctx, SEXP_FALSE, buf, SEXP_NULL);
+#else
+    return sexp_compile_error(ctx, buf, file);
+#endif
+  }
   init = dlsym(handle, "sexp_init_library");
   if (! init) {
     dlclose(handle);

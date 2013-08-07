@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#include "chibi/sexp.h"
+#include <chibi/sexp.h>
 
 /************************* additional types ***************************/
 
@@ -48,7 +48,7 @@ enum sexp_opcode_classes {
 
 extern SEXP_API struct sexp_opcode_struct const * const sexp_primitive_opcodes;
 
-#if SEXP_USE_DEBUG_VM || SEXP_USE_PROFILE_VM || SEXP_USE_STATIC_LIBS
+#if SEXP_USE_DEBUG_VM || SEXP_USE_PROFILE_VM || SEXP_USE_STATIC_LIBS || !defined(NDEBUG)
 SEXP_API const char** sexp_opcode_names;
 #endif
 

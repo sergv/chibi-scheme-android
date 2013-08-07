@@ -11,7 +11,9 @@ CHIBI_DOC_DEPENDENCIES ?= $(CHIBI_DEPENDENCIES) tools/chibi-doc
 
 GENSTATIC ?= ./tools/chibi-genstatic
 
+ifndef CHIBI
 CHIBI ?= LD_LIBRARY_PATH=".:$(LD_LIBRARY_PATH)" ./chibi-scheme$(EXE)
+endif
 CHIBI_DEPENDENCIES = ./chibi-scheme$(EXE)
 
 ########################################################################
@@ -27,7 +29,7 @@ COMPILED_LIBS = $(CHIBI_COMPILED_LIBS) $(CHIBI_IO_COMPILED_LIBS) \
 	$(CHIBI_OPT_COMPILED_LIBS) lib/srfi/18/threads$(SO) \
 	lib/srfi/33/bit$(SO) lib/srfi/39/param$(SO) \
 	lib/srfi/69/hash$(SO) lib/srfi/95/qsort$(SO) lib/srfi/98/env$(SO) \
-	lib/scheme/time$(SO)
+	lib/scheme/scheme_time$(SO)
 # disable for now
 # lib/srfi/27/rand$(SO)
 
@@ -112,8 +114,8 @@ chibi-scheme$(EXE): main.o libchibi-scheme$(SO)
 chibi-scheme-static$(EXE): main.o $(SEXP_OBJS) $(EVAL_OBJS)
 	$(CC) $(XCFLAGS) $(STATICFLAGS) -o $@ $^ $(LDFLAGS) $(GCLDFLAGS) -lm
 
-chibi-scheme-static-host$(EXE): $(EXEC_SRC)
-	$(CC) $(XCPPFLAGS) $(XCFLAGS) $(STATICFLAGS) -o $@ $^ $(LDFLAGS) $(GCLDFLAGS) -lm
+chibi-scheme-static-host$(EXE): $(EXEC_SRC) include/chibi/install.h
+	$(CC) $(XCPPFLAGS) $(XCFLAGS) $(STATICFLAGS) -o $@ $(EXEC_SRC) $(LDFLAGS) $(GCLDFLAGS) -lm
 
 chibi-scheme-ulimit$(EXE): main.o $(SEXP_ULIMIT_OBJS) $(EVAL_OBJS)
 	$(CC) $(XCFLAGS) $(STATICFLAGS) -o $@ $^ $(LDFLAGS) $(GCLDFLAGS) -lm
@@ -124,7 +126,7 @@ clibs.c: $(GENSTATIC) chibi-scheme$(EXE)
 # A special case, this needs to be linked with the LDFLAGS in case
 # we're using Boehm.
 lib/chibi/ast$(SO): lib/chibi/ast.c $(INCLUDES) libchibi-scheme$(SO)
-	-$(CC) $(CLIBFLAGS) $(XCPPFLAGS) $(XCFLAGS) -o $@ $< $(GCLDFLAGS) -L. -lchibi-scheme
+	-$(CC) $(CLIBFLAGS) $(XCPPFLAGS) $(XCFLAGS) -o $@ $< $(GCLDFLAGS) -L. $(XLIBS) -lchibi-scheme
 
 doc/lib/chibi/%.html: lib/chibi/%.sld $(CHIBI_DOC_DEPENDENCIES)
 	$(CHIBI_DOC) --html chibi.$* > $@

@@ -225,6 +225,11 @@
 #define SEXP_USE_ALIGNED_BYTECODE 0
 #endif
 
+/* define to zero in order to save more space but
+   receive more terse exceptions/errors  */
+#define SEXP_USE_VERBOSE_MESSAGES 1
+
+
 /************************************************************************/
 /* These settings are configurable but only recommended for */
 /* experienced users, and only apply when using the native GC.  */

@@ -2,7 +2,7 @@
 /*  Copyright (c) 2009-2012 Alex Shinn.  All rights reserved. */
 /*  BSD-style license: http://synthcode.com/license.txt       */
 
-#include "chibi/sexp.h"
+#include <chibi/sexp.h>
 
 /* optional huffman-compressed immediate symbols */
 struct sexp_huff_entry {

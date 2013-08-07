@@ -54,6 +54,9 @@ lib/%.c: lib/%.stub $(CHIBI_FFI_DEPENDENCIES)
 lib/%$(SO): lib/%.c $(INCLUDES) libchibi-scheme$(SO)
 	$(CC) $(CLIBFLAGS) $(XCPPFLAGS) $(XCFLAGS) -o $@ $< -L. $(XLIBS) -lchibi-scheme
 
+lib/scheme/scheme_time$(SO): lib/scheme/time.c $(INCLUDES) libchibi-scheme$(SO)
+	$(CC) $(CLIBFLAGS) $(XCPPFLAGS) $(XCFLAGS) -o $@ $< -L. $(XLIBS) -lchibi-scheme
+
 doc-libs: $(HTML_LIBS)
 
 doc/lib/%.html: lib/%.sld

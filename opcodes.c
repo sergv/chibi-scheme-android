@@ -1,5 +1,5 @@
 
-#include "chibi/eval.h"
+#include <chibi/eval.h>
 
 #define _I(n) sexp_make_fixnum(n)
 

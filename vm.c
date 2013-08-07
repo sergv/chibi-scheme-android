@@ -7,7 +7,7 @@
 #else
 /* ... the rest of this file ... */
 
-#include "chibi/eval.h"
+#include <chibi/eval.h>
 
 #if SEXP_USE_DEBUG_VM > 1
 static void sexp_print_stack (sexp ctx, sexp *stack, int top, int fp, sexp out) {

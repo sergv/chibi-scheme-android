@@ -5,11 +5,11 @@
 ;; BSD-style license: http://synthcode.com/license.txt
 
 (define-library (scheme time)
-  (export current-second current-jiffy jiffies-per-second)
+  (export current-second current-jiffy jiffies-per-second time)
   (import (chibi))
   (import (scheme process-context))
   (import (scheme time tai))
-  (include-shared "time")
+  (include-shared "scheme_time")
   ;; If the environment variable SEXP_CLOCK_TYPE is set, its value
   ;; is used for the system clock type. If the environment variable
   ;; SEXP_CLOCK_TYPE is not set, then the system clock is ntp-like
@@ -75,4 +75,8 @@
       (make-tai-clock clock-type call-with-current-clock-values))
     (define (current-jiffy)
       (inexact->exact (round (* (current-second) (jiffies-per-second)))))
-    (define (jiffies-per-second) 1000)))
+    (define (jiffies-per-second) 1000)
+    (define (time f)
+      (let ((start (current-second)))
+        (f)
+        (- (current-second) start)))))

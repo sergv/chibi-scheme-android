@@ -46,10 +46,10 @@ static void current_ntp_clock_values (double *second, int *leap_second_indicator
   struct ntptimeval ntv;
   int status = ntp_gettime(&ntv);
   if (ntp_resolution != 0 && (
-        status == TIME_OK  || 
-        status == TIME_INS || 
-        status == TIME_DEL || 
-        status == TIME_OOP || 
+        status == TIME_OK  ||
+        status == TIME_INS ||
+        status == TIME_DEL ||
+        status == TIME_OOP ||
         status == TIME_WAIT)) {
     if (ntp_resolution == 1e-6) {
       struct timeval *tv = (struct timeval *) &ntv.time;
